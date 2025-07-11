@@ -23,7 +23,7 @@ jobs:
           cd $GITHUB_WORKSPACE
           zip -9 -r pancakeos.love . -x '*.git*' '*.github*' '*.vscode*'
 
-      - name: Build Windows .exe
+      - name: Build Windows .exe and zip
         run: |
           wget https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.zip
           unzip love-11.5-win64.zip -d love-win64
@@ -34,6 +34,18 @@ jobs:
             cat love-win64/*/love.exe pancakeos.love > PancakeOS.exe
           fi
           cp love-win64/**/*.dll . || cp love-win64/*.dll .
+          zip -r PancakeOS-windows.zip PancakeOS.exe *.dll
+
+      - name: Build macOS .app
+        run: |
+          wget https://github.com/love2d/love/releases/download/11.5/love-11.5-macos.zip
+          unzip love-11.5-macos.zip -d love-macos
+          cp pancakeos.love love-macos/love.app/Contents/Resources/
+          mv love-macos/love.app love-macos/PancakeOS.app
+          # Optionally update Info.plist here for customizations
+          cd love-macos
+          zip -r ../PancakeOS-macOS.zip PancakeOS.app
+          cd ..
 
 
 
@@ -43,6 +55,5 @@ jobs:
           name: PancakeOS-builds
           path: |
             pancakeos.love
-            PancakeOS.exe
-            # PancakeOS.AppImage
-            *.dll
+            PancakeOS-windows.zip
+            PancakeOS-macOS.zip
