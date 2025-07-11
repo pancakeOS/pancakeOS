@@ -50,8 +50,11 @@ jobs:
             echo "love binary not found in squashfs-root!" && exit 1
           fi
           mkdir -p AppDir/usr/share/applications
-          echo '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
+          mkdir -p AppDir/usr/share/applications
+          echo -e '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
           cp pancakeos.love AppDir/
+          # Copy .desktop file to AppDir root for appimagetool compatibility
+          cp AppDir/usr/share/applications/pancakeos.desktop AppDir/
           wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
           chmod +x appimagetool
           # Try running appimagetool with --appimage-extract-and-run if FUSE is missing
