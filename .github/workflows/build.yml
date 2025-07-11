@@ -41,10 +41,13 @@ jobs:
           chmod +x love.AppImage
           ./love.AppImage --appimage-extract || true
           ls -l squashfs-root/usr/bin || true
-          if [ -f squashfs-root/usr/bin/love ]; then
-            cp squashfs-root/usr/bin/love AppDir/usr/bin/
+          find squashfs-root -type f -name 'love*' || true
+          LOVE_PATH=$(find squashfs-root -type f -name 'love*' | head -n 1)
+          if [ -n "$LOVE_PATH" ]; then
+            mkdir -p AppDir/usr/bin
+            cp "$LOVE_PATH" AppDir/usr/bin/love
           else
-            echo "love binary not found in squashfs-root/usr/bin/!" && exit 1
+            echo "love binary not found in squashfs-root!" && exit 1
           fi
           mkdir -p AppDir/usr/share/applications
           echo '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
