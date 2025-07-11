@@ -35,35 +35,7 @@ jobs:
           fi
           cp love-win64/**/*.dll . || cp love-win64/*.dll .
 
-      - name: Build Linux AppImage
-        run: |
-          wget https://github.com/love2d/love/releases/download/11.5/love-11.5-x86_64.AppImage -O love.AppImage
-          chmod +x love.AppImage
-          ./love.AppImage --appimage-extract || true
-          ls -l squashfs-root/usr/bin || true
-          find squashfs-root -type f -name 'love*' || true
-          LOVE_PATH=$(find squashfs-root -type f -name 'love*' | head -n 1)
-          if [ -n "$LOVE_PATH" ]; then
-            mkdir -p AppDir/usr/bin
-            cp "$LOVE_PATH" AppDir/usr/bin/love
-          else
-            echo "love binary not found in squashfs-root!" && exit 1
-          fi
-          mkdir -p AppDir/usr/share/applications
-          mkdir -p AppDir/usr/share/applications
-          echo -e '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
-          cp pancakeos.love AppDir/
-          # Copy .desktop file to AppDir root for appimagetool compatibility
-          cp AppDir/usr/share/applications/pancakeos.desktop AppDir/
-          wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
-          chmod +x appimagetool
-          # Try running appimagetool with --appimage-extract-and-run if FUSE is missing
-          if ./appimagetool AppDir PancakeOS.AppImage; then
-            echo "AppImage created successfully."
-          else
-            echo "appimagetool failed, trying with --appimage-extract-and-run (no FUSE workaround)"
-            ./appimagetool --appimage-extract-and-run AppDir PancakeOS.AppImage || (echo "Both AppImage creation methods failed!" && exit 1)
-          fi
+
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -72,5 +44,5 @@ jobs:
           path: |
             pancakeos.love
             PancakeOS.exe
-            PancakeOS.AppImage
+            # PancakeOS.AppImage
             *.dll
