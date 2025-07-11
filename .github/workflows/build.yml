@@ -39,9 +39,13 @@ jobs:
         run: |
           wget https://github.com/love2d/love/releases/download/11.5/love-11.5-x86_64.AppImage -O love.AppImage
           chmod +x love.AppImage
-          ./love.AppImage --appimage-extract
-          mkdir -p AppDir/usr/bin
-          cp squashfs-root/usr/bin/love AppDir/usr/bin/
+          ./love.AppImage --appimage-extract || true
+          ls -l squashfs-root/usr/bin || true
+          if [ -f squashfs-root/usr/bin/love ]; then
+            cp squashfs-root/usr/bin/love AppDir/usr/bin/
+          else
+            echo "love binary not found in squashfs-root/usr/bin/!" && exit 1
+          fi
           mkdir -p AppDir/usr/share/applications
           echo '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
           cp pancakeos.love AppDir/
