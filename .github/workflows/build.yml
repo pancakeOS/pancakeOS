@@ -1,0 +1,55 @@
+name: Build PancakeOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y zip wget
+
+      - name: Create .love file
+        run: |
+          cd $GITHUB_WORKSPACE
+          zip -9 -r pancakeos.love . -x '*.git*' '*.github*' '*.vscode*'
+
+      - name: Build Windows .exe
+        run: |
+          wget https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.zip
+          unzip love-11.5-win64.zip -d love-win64
+          cat love-win64/love.exe pancakeos.love > PancakeOS.exe
+          cp love-win64/*.dll .
+
+      - name: Build Linux AppImage
+        run: |
+          wget https://github.com/love2d/love/releases/download/11.5/love-11.5-x86_64.AppImage -O love.AppImage
+          chmod +x love.AppImage
+          ./love.AppImage --appimage-extract
+          mkdir -p AppDir/usr/bin
+          cp squashfs-root/usr/bin/love AppDir/usr/bin/
+          mkdir -p AppDir/usr/share/applications
+          echo '[Desktop Entry]\nName=PancakeOS\nExec=love pancakeos.love\nType=Application\nCategories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
+          cp pancakeos.love AppDir/
+          wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+          ./appimagetool AppDir PancakeOS.AppImage
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: PancakeOS-builds
+          path: |
+            pancakeos.love
+            PancakeOS.exe
+            PancakeOS.AppImage
+            *.dll
