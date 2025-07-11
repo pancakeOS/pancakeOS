@@ -54,7 +54,13 @@ jobs:
           cp pancakeos.love AppDir/
           wget https://github.com/AppImage/AppImageKit/releases/download/13/appimagetool-x86_64.AppImage -O appimagetool
           chmod +x appimagetool
-          ./appimagetool AppDir PancakeOS.AppImage
+          # Try running appimagetool with --appimage-extract-and-run if FUSE is missing
+          if ./appimagetool AppDir PancakeOS.AppImage; then
+            echo "AppImage created successfully."
+          else
+            echo "appimagetool failed, trying with --appimage-extract-and-run (no FUSE workaround)"
+            ./appimagetool --appimage-extract-and-run AppDir PancakeOS.AppImage || (echo "Both AppImage creation methods failed!" && exit 1)
+          fi
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
