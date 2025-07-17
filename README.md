@@ -17,17 +17,27 @@ MORE COMING SOON
 ### Windows
 
 1. Download [LOVE](https://love2d.org/)
-```POWERSHELL
-curl -L https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.exe -o love2dintaller.exe
-love2dintaller.exe
-```
+    1. With the EXE 
+        ```POWERSHELL
+        curl -L https://github.com/love2d/love/releases/download/11.5/love-11.5-win64.exe -o love2dintaller.exe
+        love2dintaller.exe
+        ```
+    2. With Scoop 
+        ```POWERSHELL
+        scoop install extras/love
+        ```
+
 2. Find where your LOVE installation is located usually in C:\Users\<YOUR USERNAME>\AppData\Roaming\LOVE
-3. Make a shortcut with the executable love.exe putting it in desktop is recommended.
+3. Make a shortcut with the executable love.exe putting it in desktop is recommended. If you downloaded LOVE with Scoop you don't need to.
 4. Clone this repository
 ```POWERSHELL
 git clone https://github.com/pancakeOS/pancakeOS.git
 ```
-5. Drag the repository folder into the shortcut you made.
+5. Drag the repository folder into the shortcut you made. If you installed LOVE with Scoop open Powershell and type.
+```POWERSHELL
+cd pancakeOS
+love .
+```
 
 ### Linux
 
