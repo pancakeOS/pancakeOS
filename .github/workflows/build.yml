@@ -25,16 +25,12 @@ jobs:
           cd $GITHUB_WORKSPACE
           zip -9 -r pancakeos.love . -x '*.git*' '*.github*' '*.vscode*'
 
-      - name: Build Linux AppImage-like tarball
+      - name: Build Linux tarball
         run: |
           # Create a simple tar.gz containing the .love file and a small launcher script
           mkdir -p pancakeos-linux
           cp pancakeos.love pancakeos-linux/
-          cat > pancakeos-linux/run.sh <<'EOF'
-          #!/bin/sh
-          DIR=$(dirname "$0")
-          exec love "$DIR/pancakeos.love"
-          EOF
+          printf '#!/bin/sh\nDIR=$(dirname "$0")\nexec love "${DIR}/pancakeos.love"\n' > pancakeos-linux/run.sh
           chmod +x pancakeos-linux/run.sh
           tar -czf PancakeOS-linux.tar.gz -C pancakeos-linux .
           ls -la PancakeOS-linux.tar.gz
@@ -75,99 +71,4 @@ jobs:
             PancakeOS-macOS.zip
               PancakeOS-linux.tar.gz
 
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release' && github.event.action == 'created'
-    needs: build
-    permissions:
-      contents: write
-      checks: write
-    env:
-      TOKEN: ${{ secrets.TOKEN }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: PancakeOS-builds
-
-      - name: Fail if TOKEN secret missing
-        run: |
-          if [ -z "$TOKEN" ]; then echo "Required secret TOKEN is not set. Aborting release."; exit 1; fi
-
-
-      - name: Number release as #N
-        id: number_release
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const releases = await github.rest.repos.listReleases({ owner, repo, per_page: 100 });
-            // Count only non-draft releases
-            const count = releases.data.filter(r => !r.draft).length;
-            const releaseNumber = count; // the release created event is already in the list
-            const name = `#${releaseNumber}`;
-            await github.rest.repos.updateRelease({ owner, repo, release_id: context.payload.release.id, name });
-            return { name };
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
-
-      - name: Build Windows release zip (ensure asset exists)
-        run: |
-          if [ ! -f PancakeOS-windows.zip ]; then echo "PancakeOS-windows.zip missing"; ls -la; exit 1; fi
-
-      - name: Build macOS release zip (ensure asset exists)
-        run: |
-          if [ ! -f PancakeOS-macOS.zip ]; then echo "PancakeOS-macOS.zip missing"; ls -la; exit 1; fi
-
-      - name: Ensure .love exists
-        run: |
-          if [ ! -f pancakeos.love ]; then echo "pancakeos.love missing"; ls -la; exit 1; fi
-
-      - name: Ensure Linux tarball exists
-        run: |
-          if [ ! -f PancakeOS-linux.tar.gz ]; then echo "PancakeOS-linux.tar.gz missing"; ls -la; exit 1; fi
-
-      # release already exists; will attach assets below
-
-      - name: Upload release assets (windows)
-        uses: actions/upload-release-asset@v2
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./PancakeOS-windows.zip
-          asset_name: PancakeOS-windows.zip
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
-
-      - name: Upload release assets (macOS)
-        uses: actions/upload-release-asset@v2
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./PancakeOS-macOS.zip
-          asset_name: PancakeOS-macOS.zip
-          asset_content_type: application/zip
-
-      - name: Upload release asset (.love)
-        uses: actions/upload-release-asset@v2
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./pancakeos.love
-          asset_name: pancakeos.love
-          asset_content_type: application/zip
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
-
-      - name: Upload release asset (linux tar.gz)
-        uses: actions/upload-release-asset@v2
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./PancakeOS-linux.tar.gz
-          asset_name: PancakeOS-linux.tar.gz
-          asset_content_type: application/gzip
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+  # release job removed: releasing is handled by .github/workflows/release.yml
