@@ -21,10 +21,33 @@ else
 fi
 
 # Try to copy system love binary
+# Try to copy system love binary; if not available bundle official Love2D runtime
 if [ -x /usr/bin/love ]; then
   cp /usr/bin/love AppDir/usr/bin/ || true
 else
-  echo "/usr/bin/love not found; AppImage may fail at runtime" >&2
+  echo "/usr/bin/love not found; bundling Love2D runtime into AppDir" >&2
+  # Download official Love2D Linux runtime (x86_64) and extract
+  LOVEDIR=love-runtime
+  rm -rf "$LOVEDIR" && mkdir -p "$LOVEDIR"
+  wget -q -O love.tgz "https://github.com/love2d/love/releases/download/11.5/love-11.5-x86_64.tar.gz"
+  tar xzf love.tgz -C "$LOVEDIR" --strip-components=1
+  # Place libs and binary under AppDir/usr
+  mkdir -p AppDir/usr/lib AppDir/usr/bin
+  cp -r "$LOVEDIR"/* AppDir/usr/lib/ || true
+  # The extracted runtime typically contains a 'love' binary at usr/bin/love or similar
+  if [ -f AppDir/usr/lib/usr/bin/love ]; then
+    cp AppDir/usr/lib/usr/bin/love AppDir/usr/bin/love
+  elif [ -f AppDir/usr/lib/bin/love ]; then
+    cp AppDir/usr/lib/bin/love AppDir/usr/bin/love
+  else
+    echo "Bundled love binary not found in runtime archive" >&2
+  fi
+  # Create a wrapper that sets LD_LIBRARY_PATH to bundled libs
+  printf '%s
+' '#!/bin/sh' 'HERE="$(dirname "$(readlink -f "$0")")"' 'export LD_LIBRARY_PATH="$HERE/../lib:$LD_LIBRARY_PATH"' 'exec "$HERE/love" "$@"' > AppDir/usr/bin/love-wrapper
+  chmod +x AppDir/usr/bin/love-wrapper
+  # Ensure AppRun will call the wrapper instead of system love
+  mv AppDir/usr/bin/love-wrapper AppDir/usr/bin/love || true
 fi
 
 # Create AppRun
@@ -32,13 +55,16 @@ printf '%s
 ' '#!/bin/sh' 'HERE="$(dirname "$(readlink -f "$0")")"' 'exec "$HERE/usr/bin/love" "$HERE/usr/share/pancakeos/pancakeos.love" "$@"' > AppDir/AppRun
 chmod +x AppDir/AppRun
 
-# Desktop file
+# Desktop file (create both the standard applications path and a top-level .desktop file AppImage expects)
 printf '%s
-' '[Desktop Entry]' 'Type=Application' 'Name=PancakeOS' 'Exec=PancakeOS %F' 'Icon=pancakeos' 'Categories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
+' '[Desktop Entry]' 'Type=Application' 'Name=PancakeOS' 'Exec=AppRun %F' 'Icon=pancakeos' 'Categories=Game;' > AppDir/usr/share/applications/pancakeos.desktop
+cp AppDir/usr/share/applications/pancakeos.desktop AppDir/pancakeos.desktop
 
 # Icon
 if [ -f assets/images/logo.png ]; then
   cp assets/images/logo.png AppDir/usr/share/icons/hicolor/256x256/apps/pancakeos.png
+  # also copy a top-level icon AppImage can discover
+  cp assets/images/logo.png AppDir/pancakeos.png
 fi
 
 # Download appimagetool and build AppImage
