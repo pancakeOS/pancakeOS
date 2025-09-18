@@ -1,10 +1,14 @@
 name: Build PancakeOS
+# Note: Commits containing [ci-skip] will skip push-triggered runs.
+# Use the Actions tab -> Build PancakeOS -> Run workflow to trigger manually.
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  # allow manual runs from the Actions UI (useful when commits include [ci-skip])
+  workflow_dispatch:
   release:
     types: [created]
 
@@ -70,5 +74,3 @@ jobs:
             PancakeOS-windows.zip
             PancakeOS-macOS.zip
               PancakeOS-linux.tar.gz
-
-  # release job removed: releasing is handled by .github/workflows/release.yml

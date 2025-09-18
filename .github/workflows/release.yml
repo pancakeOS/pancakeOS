@@ -71,22 +71,7 @@ jobs:
           zip -r ../PancakeOS-macOS.zip PancakeOS.app || true
           cd .. || true
 
-      - name: Number release as #N
-        id: number_release
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const releases = await github.rest.repos.listReleases({ owner, repo, per_page: 100 });
-            const count = releases.data.filter(r => !r.draft).length;
-            const releaseNumber = count;
-            const name = `#${releaseNumber}`;
-            const releaseId = process.env.RELEASE_ID ? Number(process.env.RELEASE_ID) : context.payload.release.id;
-            await github.rest.repos.updateRelease({ owner, repo, release_id: releaseId, name });
-            return { name };
-        env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+      # release creation / env-setting steps follow below
 
       - name: Create release (manual run)
         if: ${{ github.event_name == 'workflow_dispatch' }}
@@ -109,6 +94,24 @@ jobs:
         run: |
           echo "RELEASE_UPLOAD_URL=${{ github.event.release.upload_url }}" >> $GITHUB_ENV
           echo "RELEASE_ID=${{ github.event.release.id }}" >> $GITHUB_ENV
+
+      - name: Number release as #N
+        id: number_release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const releases = await github.rest.repos.listReleases({ owner, repo, per_page: 100 });
+            const count = releases.data.filter(r => !r.draft).length;
+            const releaseNumber = count;
+            const name = `#${releaseNumber}`;
+            const releaseId = process.env.RELEASE_ID ? Number(process.env.RELEASE_ID) : (context.payload.release ? context.payload.release.id : undefined);
+            if (!releaseId) throw new Error('Release ID not available');
+            await github.rest.repos.updateRelease({ owner, repo, release_id: releaseId, name });
+            return { name };
+        env:
+          GITHUB_TOKEN: ${{ env.TOKEN }}
 
       - name: Upload asset (windows)
         uses: actions/upload-release-asset@v1
