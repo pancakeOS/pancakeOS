@@ -3,6 +3,20 @@ name: Release PancakeOS
 on:
   release:
     types: [created]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag for the release (optional). If empty a timestamp tag will be created.'
+        required: false
+        default: ''
+      name:
+        description: 'Release name (optional)'
+        required: false
+        default: ''
+      body:
+        description: 'Release notes/body (optional)'
+        required: false
+        default: ''
 
 jobs:
   build:
@@ -68,15 +82,38 @@ jobs:
             const count = releases.data.filter(r => !r.draft).length;
             const releaseNumber = count;
             const name = `#${releaseNumber}`;
-            await github.rest.repos.updateRelease({ owner, repo, release_id: context.payload.release.id, name });
+            const releaseId = process.env.RELEASE_ID ? Number(process.env.RELEASE_ID) : context.payload.release.id;
+            await github.rest.repos.updateRelease({ owner, repo, release_id: releaseId, name });
             return { name };
         env:
           GITHUB_TOKEN: ${{ env.TOKEN }}
 
+      - name: Create release (manual run)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag || format('manual-{0}', github.run_id) }}
+          release_name: ${{ github.event.inputs.name || '' }}
+          body: ${{ github.event.inputs.body || '' }}
+          draft: false
+
+      - name: Set RELEASE variables from created release
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          echo "RELEASE_UPLOAD_URL=${{ steps.create_release.outputs.upload_url }}" >> $GITHUB_ENV
+          echo "RELEASE_ID=${{ steps.create_release.outputs.id }}" >> $GITHUB_ENV
+
+      - name: Set RELEASE variables from event release
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          echo "RELEASE_UPLOAD_URL=${{ github.event.release.upload_url }}" >> $GITHUB_ENV
+          echo "RELEASE_ID=${{ github.event.release.id }}" >> $GITHUB_ENV
+
       - name: Upload asset (windows)
         uses: actions/upload-release-asset@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL || github.event.release.upload_url }}
           asset_path: ./PancakeOS-windows.zip
           asset_name: PancakeOS-windows.zip
           asset_content_type: application/zip
@@ -86,7 +123,7 @@ jobs:
       - name: Upload asset (macOS)
         uses: actions/upload-release-asset@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL || github.event.release.upload_url }}
           asset_path: ./PancakeOS-macOS.zip
           asset_name: PancakeOS-macOS.zip
           asset_content_type: application/zip
@@ -96,7 +133,7 @@ jobs:
       - name: Upload asset (.love)
         uses: actions/upload-release-asset@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL || github.event.release.upload_url }}
           asset_path: ./pancakeos.love
           asset_name: pancakeos.love
           asset_content_type: application/zip
@@ -114,7 +151,7 @@ jobs:
       - name: Upload asset (AppImage)
         uses: actions/upload-release-asset@v2
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ env.RELEASE_UPLOAD_URL || github.event.release.upload_url }}
           asset_path: ./PancakeOS-x86_64.AppImage
           asset_name: PancakeOS-x86_64.AppImage
           asset_content_type: application/octet-stream
