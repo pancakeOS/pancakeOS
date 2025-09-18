@@ -6,7 +6,7 @@ local setup = {}
 
 function setup.load()
     --load images
-    pancakeosLogo = love.graphics.newImage('assets/logo.png')
+    pancakeosLogo = love.graphics.newImage('assets/images/logo.png')
 end 
 
 function setup.draw()

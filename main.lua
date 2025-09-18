@@ -14,7 +14,7 @@ local cursorState = "default"
 
 function love.load()
 
-    vendorLogo = love.graphics.newImage('assets/panmicrosystems.png')
+    vendorLogo = love.graphics.newImage('assets/images/panmicrosystems.png')
 
     love.window.setMode(800, 600, {
         resizable = true,
@@ -26,9 +26,9 @@ function love.load()
     love.window.maximize()
 
     -- Load custom cursor images
-    cursorImage = love.image.newImageData('assets/cursor.png')
+    cursorImage = love.image.newImageData('assets/images/cursor.png')
     customCursor = love.mouse.newCursor(cursorImage, 0, 0)
-    selectCursorImage = love.image.newImageData('assets/cursor_select.png')
+    selectCursorImage = love.image.newImageData('assets/images/cursor_select.png')
     selectCursor = love.mouse.newCursor(selectCursorImage, 0, 0)
 
     love.mouse.setCursor(customCursor)

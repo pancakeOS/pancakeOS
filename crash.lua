@@ -7,8 +7,8 @@ local crash = {}
 
 function crash.load()
     -- Load the crash images (totally not a rickroll and sob emoji)
-    crash_qrcode = love.graphics.newImage('assets/crash_qrcode.png')
-    crash_sob = love.graphics.newImage('assets/crash_sob.png')
+    crash_qrcode = love.graphics.newImage('assets/images/crash_qrcode.png')
+    crash_sob = love.graphics.newImage('assets/images/crash_sob.png')
     font = love.graphics.newFont('assets/fonts/UbuntuMono.tff', 17)
 end
 
