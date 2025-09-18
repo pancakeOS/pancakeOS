@@ -25,12 +25,8 @@ jobs:
     permissions:
       contents: write
     env:
-      TOKEN: ${{ secrets.TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - name: Fail if TOKEN secret missing
-        run: |
-          if [ -z "$TOKEN" ]; then echo "Required secret TOKEN is not set. Aborting release."; exit 1; fi
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -111,7 +107,7 @@ jobs:
             await github.rest.repos.updateRelease({ owner, repo, release_id: releaseId, name });
             return { name };
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload asset (windows)
         uses: actions/upload-release-asset@v1
@@ -121,7 +117,7 @@ jobs:
           asset_name: PancakeOS-windows.zip
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload asset (macOS)
         uses: actions/upload-release-asset@v1
@@ -131,7 +127,7 @@ jobs:
           asset_name: PancakeOS-macOS.zip
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload asset (.love)
         uses: actions/upload-release-asset@v1
@@ -141,7 +137,7 @@ jobs:
           asset_name: pancakeos.love
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Ensure AppImage is present
         run: |
@@ -159,4 +155,4 @@ jobs:
           asset_name: PancakeOS-x86_64.AppImage
           asset_content_type: application/octet-stream
         env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
