@@ -111,7 +111,7 @@ jobs:
             await github.rest.repos.updateRelease({ owner, repo, release_id: releaseId, name });
             return { name };
         env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload asset (windows)
         uses: actions/upload-release-asset@v1
@@ -121,7 +121,7 @@ jobs:
           asset_name: PancakeOS-windows.zip
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload asset (macOS)
         uses: actions/upload-release-asset@v1
@@ -131,7 +131,7 @@ jobs:
           asset_name: PancakeOS-macOS.zip
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Upload asset (.love)
         uses: actions/upload-release-asset@v1
@@ -141,7 +141,7 @@ jobs:
           asset_name: pancakeos.love
           asset_content_type: application/zip
         env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
       - name: Ensure AppImage is present
         run: |
@@ -159,4 +159,4 @@ jobs:
           asset_name: PancakeOS-x86_64.AppImage
           asset_content_type: application/octet-stream
         env:
-          GITHUB_TOKEN: ${{ env.TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
