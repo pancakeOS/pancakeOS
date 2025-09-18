@@ -46,6 +46,12 @@ jobs:
         run: |
           chmod +x .github/scripts/build_appimage.sh || true
           ./.github/scripts/build_appimage.sh
+      - name: Show AppDir contents for debugging
+        run: |
+          echo "---- AppDir listing ----"
+          ls -la AppDir || true
+          echo "---- workspace root ----"
+          ls -la || true
 
       - name: Build Windows .exe and zip
         run: |

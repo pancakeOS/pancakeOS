@@ -44,6 +44,21 @@ fi
 # Download appimagetool and build AppImage
 wget -q -O appimagetool.AppImage "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
 chmod +x appimagetool.AppImage
-./appimagetool.AppImage AppDir PancakeOS-x86_64.AppImage || true
+# Try running appimagetool normally first, capture output; fall back to extract-and-run
+set +e
+echo "Running appimagetool (normal mode)..."
+./appimagetool.AppImage AppDir PancakeOS-x86_64.AppImage 2>&1 | tee appimagetool.log
+RET=$?
+if [ $RET -ne 0 ]; then
+  echo "appimagetool normal run failed with exit code $RET, trying extract-and-run fallback..."
+  ./appimagetool.AppImage --appimage-extract-and-run AppDir PancakeOS-x86_64.AppImage 2>&1 | tee -a appimagetool.log
+  RET2=$?
+  if [ $RET2 -ne 0 ]; then
+    echo "appimagetool extract-and-run also failed (exit $RET2). See appimagetool.log:" >&2
+    tail -n 200 appimagetool.log >&2 || true
+    exit $RET2
+  fi
+fi
+set -e
 
 echo "AppImage build finished"
