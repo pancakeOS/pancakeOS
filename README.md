@@ -7,6 +7,7 @@ We are not a actual OS that you can put onto a USB stick and boot since making a
 What this actually is a OS made with [LOVE](https://love2d.org/) since this was originally a Scratch project but by a different name (btw using it is a little broken cause yea it was made like 3 years ago)
 MORE COMING SOON
 
+## If you would like a easy way to download on Windows we have a [launcher.](https://github.com/pancakeOS/launcher/releases/latest)
 
 ## FAQ
 
