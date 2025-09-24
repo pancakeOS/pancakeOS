@@ -2,6 +2,8 @@ if arg[2] == "debug" then
     require("lldebugger").start()
 end
 
+local wineCheck = require("utils/wine-check") -- Load the wine-check module
+
 local cursorImage
 local customCursor
 local selectCursorImage
@@ -13,6 +15,8 @@ local textCursor
 local cursorState = "default"
 
 function love.load()
+
+    wineCheck.blockIfWine() -- Block execution if running under Wine
 
     vendorLogo = love.graphics.newImage('assets/images/panmicrosystems.png')
 
