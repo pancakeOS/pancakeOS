@@ -2,14 +2,16 @@ if arg[2] == "debug" then
     require("lldebugger").start()
 end
 
-local wineCheck = require("utils/wine-check") -- Load the wine-check module
+local wineCheck = require("utils/wine-check") -- Load the wine-check module -- Why?
 
 local cursorImage
 local customCursor
 local selectCursorImage
 local selectCursor
-local textCursorImage
-local textCursor
+--local textCursorImage
+--local textCursor
+
+local vendorLogo --? have it as a local not a global
 
 -- Cursor states: "default", "select", "text" (dont suggest changing these lol)
 local cursorState = "default"
@@ -48,4 +50,3 @@ function love.draw()
     love.graphics.print("Press F1 for Setup Utility      Press F10 for Boot Menu", 0, 825)
     
 end
-
