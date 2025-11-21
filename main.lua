@@ -3,6 +3,7 @@ if arg[2] == "debug" then
 end
 
 local wineCheck = require("utils/wine-check") -- Load the wine-check module
+local bootSequence = require("utils/boot-sequence") -- load bootSequence
 
 local cursorImage
 local customCursor
