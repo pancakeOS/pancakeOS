@@ -4,7 +4,8 @@ if arg[2] == "debug" then
     require("lldebugger").start()
 end
 
-local wineCheck = require("utils/wine-check") -- Load the wine-check module --? Why?
+local wineCheck = require("utils/wine-check") -- Load the wine-check module
+local bootSequence = require("utils/boot-sequence") -- load bootSequence
 
 local customCursor
 local selectCursor
