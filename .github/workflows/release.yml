@@ -68,9 +68,9 @@ jobs:
 
           # Copy native DLLs
           mkdir -p natives
-          cp -r natives/* natives/
+          cp -r natives natives || true
 
-          zip -r PancakeOS-windows.zip PancakeOS.exe *.dll natives/
+          zip -r PancakeOS-windows.zip PancakeOS.exe *.dll natives/ || true
 
       - name: Build macOS .app
         run: |
