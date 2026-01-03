@@ -7,4 +7,5 @@ function love.conf(t)
     t.window.minheight = 600
     t.window.resizable = true
     t.window.highdpi = true
+    t.console = false -- Enable console window (Windows only) also do not enable it on release builds
 end

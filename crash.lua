@@ -14,5 +14,7 @@ end
 
 function crash.draw()
     love.graphics.draw(crash_sob, 100, 100)
+    love.graphics.draw(crash_qrcode, 600, 300)
+    love.graphics.setFont('assets/fonts/UbuntuMono.tff', 17)
 end
 

@@ -5,4 +5,7 @@
 	],
 	"Lua.runtime.version": "LuaJIT",
 	"Lua.workspace.checkThirdParty": false,
+    "terminal.integrated.shell.windows": "C:\\msys64\\msys2_shell.cmd",
+    "terminal.integrated.shellArgs.windows": ["-mingw64"]
 }
+
