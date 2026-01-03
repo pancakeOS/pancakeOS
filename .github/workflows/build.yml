@@ -27,7 +27,9 @@ jobs:
       - name: Create .love file
         run: |
           cd $GITHUB_WORKSPACE
-          zip -9 -r pancakeos.love . -x '*.git*' '*.github*' '*.vscode*'
+          zip -9 -r pancakeos.love . \
+          -x '*.git*' '*.github*' '*.vscode*' \
+          'natives/*'
 
       - name: Build Linux tarball
         run: |
@@ -50,7 +52,12 @@ jobs:
             cat love-win64/*/love.exe pancakeos.love > PancakeOS.exe
           fi
           cp love-win64/**/*.dll . || cp love-win64/*.dll .
-          zip -r PancakeOS-windows.zip PancakeOS.exe *.dll
+
+          # Copy native DLLs
+          mkdir -p natives
+          cp -r natives natives || true
+
+          zip -r PancakeOS-windows.zip PancakeOS.exe *.dll natives/
 
       - name: Build macOS .app
         run: |
