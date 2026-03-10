@@ -34,7 +34,7 @@ MORE COMING SOON
 ```POWERSHELL
 git clone https://github.com/pancakeOS/pancakeOS.git
 ```
-5. Drag the repository folder into the shortcut you made. If you installed LOVE with Scoop open Powershell and type.
+5. Drag the repository folder into the shortcut you made. If you installed LOVE with Scoop open Powershell or added LOVE to your system paths run.
 ```POWERSHELL
 cd pancakeOS
 love .
@@ -43,16 +43,24 @@ love .
 ### Linux
 
 1. Download LOVE for your distro<br>
-APT(Any Ubuntu based distro)
+APT(Any Debian/Ubuntu based distro)
 ```BASH
 sudo apt update -y
 sudo apt install love -y
 ```
-PACMAN(Arch linux)
+DNF(Any Fedora based distro)
+```BASH
+sudo dnf check-update
+sudo dnf install love
+```
+PACMAN(Any Arch based distro)
 ```BASH
 sudo pacman -Syy
 sudo pacman -S love
 ```
+OTHER DISTROS(LOVE is not in your distros package manager)
+Download [LOVE](https://love2d.org/) AppImage from their website
+
 2. Clone the repository
 ```BASH
 git clone https://github.com/pancakeOS/pancakeOS.git
@@ -64,6 +72,11 @@ cd pancakeOS
 4. Run love . and a window should open.
 ```BASH
 love .
+```
+If you're using the AppImage run these commands instead.
+```BASH
+chmod +x love-*.AppImage
+./love-*.AppImage /path/to/pancakeos/
 ```
 
 ### Mac
