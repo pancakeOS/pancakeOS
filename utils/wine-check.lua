@@ -26,7 +26,7 @@ function P.isWine()
 end
 
 -- Show message and quit if Wine detected :3
-function P.blockIfWine()
+function P.warnIfWine()
     -- Only run on Windows
     if love.system.getOS() ~= "Windows" then -- Check if your runnuing Windows
         return
@@ -35,10 +35,9 @@ function P.blockIfWine()
     if P.isWine() then
         love.window.showMessageBox(
             "Unsupported :(",
-            "Wine is not supported!\nYou can download an AppImage from GitHub releases. :)", -- Shows a very nice message :)
-            "error"
+            "Wine is not supported this may lead to unexpected issues!\nYou can download an AppImage from GitHub releases. :)", -- Shows a very nice message :)
+            "warning"
         )
-        love.event.quit()
     end
 end
 

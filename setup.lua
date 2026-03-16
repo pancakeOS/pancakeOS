@@ -18,4 +18,5 @@ function setup.draw()
 
     love.graphics.print("Welcome to PancakeOS Setup Utility", 10, 10)
     love.graphics.print("Press Enter to continue...", 10, 30)
+    
 end

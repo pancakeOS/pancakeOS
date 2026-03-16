@@ -10,7 +10,7 @@ elseif os == "Linux" then
 elseif os == "OS X" then
     libPath = "natives/libdiscord-rpc.dylib"
 else
-    error("Unsupported OS for Discord RPC")
+    warn("Unsupported OS for Discord RPC")
 end
 
 local discordRPClib = ffi.load(libPath)

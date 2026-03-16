@@ -37,13 +37,13 @@ end
 
 local customCursor
 local selectCursor
---local textCursor
+--local textCursor (WIP)
 
 -- Cursor states: "default", "select", "text" (dont suggest changing these lol)
 local cursorState = "default"
 
 function love.load()
-    wineCheck.blockIfWine() -- Block execution if running under Wine --? Why?
+    wineCheck.warnIfWine() -- Check for wine and warn the user if detected.
 
     -- Load custom cursor images
     customCursor = love.mouse.newCursor(love.image.newImageData('assets/images/cursor.png'), 0, 0)
